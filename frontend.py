@@ -6,10 +6,6 @@ import os
 import warnings
 warnings.filterwarnings('ignore')
 
-
-st.write("Files in current directory:")
-st.write(os.listdir())
-
 # Configure the app
 st.set_page_config(
     page_title="Airbnb Price Predictor",
