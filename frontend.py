@@ -12,9 +12,6 @@ st.set_page_config(
     page_icon="🏠",
     layout="wide"
 )
-
-st.write("Files in current directory:")
-st.write(os.listdir())
          
 # Property types from Airbnb data
 PROPERTY_TYPES = [
