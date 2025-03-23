@@ -6,7 +6,7 @@ import os
 import warnings
 warnings.filterwarnings('ignore')
 
-import os
+
 st.write("Files in current directory:")
 st.write(os.listdir())
 
@@ -17,6 +17,9 @@ st.set_page_config(
     layout="wide"
 )
 
+st.write("Files in current directory:")
+st.write(os.listdir())
+         
 # Property types from Airbnb data
 PROPERTY_TYPES = [
     "Apartment", "House", "Condominium", "Loft", "Townhouse", 
