@@ -186,4 +186,11 @@ with st.expander("❓ How does the prediction work?"):
     """)
 
 # Add settings in sidebar for app customization
-# st.sidebar.title(" Settings")
+st.sidebar.title("⚙️ Settings")
+
+debug_mode = st.sidebar.checkbox(" Show Input Data", value=False)
+if debug_mode:
+    st.json(features_dict)
+
+if st.sidebar.button("Reset Form"):
+    st.experimental_rerun()  # Clears all inputs
