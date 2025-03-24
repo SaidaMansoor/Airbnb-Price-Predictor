@@ -8,3 +8,4 @@ scikit-learn
 requests
 supervisor
 xgboost
+matplotlib
