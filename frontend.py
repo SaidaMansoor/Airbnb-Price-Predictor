@@ -120,6 +120,13 @@ if submitted:
             
             # Safely encode categorical variables
             input_df = safe_encode_categorical(input_df, encoders)
+
+            required_columns = ['zipcode', 'latitude', 'longitude', 'property_type', 'room_type', 
+                                'accommodates', 'bathrooms', 'bedrooms', 'beds', 'bed_type', 
+                                'availability_365', 'number_of_reviews', 'review_scores_rating', 
+                                'review_scores_cleanliness', 'review_scores_location', 
+                                'review_scores_value', 'price_per_person', 'total_sleeping_capacity', 
+                                'has_reviews', 'location', 'distance_to_center']
             
             # Scale and predict
             input_scaled = scaler.transform(input_df[required_columns])
