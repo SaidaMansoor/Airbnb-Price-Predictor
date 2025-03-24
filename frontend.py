@@ -94,10 +94,8 @@ with st.form("prediction_form"):
 if submitted:
     if model_loaded:
         try:
-            # Create features dictionary (your existing code)
-            features_dict = {
-            
-                    "zipcode": zipcode,
+            # Create features dictionary 
+            features_dict = {"zipcode": zipcode,
                     "latitude": latitude,
                     "longitude": longitude,
                     "property_type": property_type,
@@ -114,7 +112,17 @@ if submitted:
                     "review_scores_location": review_scores_location,
                     "review_scores_value": review_scores_value
             }
-            
+            # Handle missing values with reasonable defaults
+            features_dict['beds'] = features_dict.get('beds') or features_dict['accommodates']
+            features_dict['bedrooms'] = features_dict.get('bedrooms') or max(1, features_dict['beds'] // 2)
+
+            # Create engineered features
+            features_dict['has_reviews'] = int(features_dict['number_of_reviews'] > 0)
+            features_dict['total_sleeping_capacity'] = features_dict['beds'] * 2
+            features_dict['location'] = features_dict['zipcode']  # Using zipcode as location
+            features_dict['distance_to_center'] = 0.0  # Would calculate from lat/long in real implementation
+            features_dict['price_per_person'] = 1.0  # Placeholder, will be replaced by prediction
+
             # Preprocess input
             input_df = preprocess_input(features_dict)
             
