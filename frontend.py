@@ -11,7 +11,18 @@ st.set_page_config(
     page_title="Airbnb Price Predictor",
     layout="wide"
 )
-         
+
+# ----------------------------------------------------------
+
+# Import custom modules
+from feature_engineering import preprocess_input
+from model_utils import (
+    load_model_components, 
+    safe_encode_categorical, 
+    plot_feature_importance
+)
+
+# ----------------------------------------------
 # Property types from Airbnb data
 PROPERTY_TYPES = [
     "Apartment", "House", "Condominium", "Loft", "Townhouse", 
@@ -79,15 +90,13 @@ with st.form("prediction_form"):
     st.markdown("---")
     submitted = st.form_submit_button("Predict Price", use_container_width=True)
 
-# Handle prediction
+# ----------------------------------------------------------
 if submitted:
-    if not model_loaded:
-        st.error("❌ Model files not found. Please make sure the model files are in the app directory.")
-    else:
+    if model_loaded:
         try:
-            with st.spinner(" Calculating optimal price..."):
-                # Create features dictionary
-                features_dict = {
+            # Create features dictionary (your existing code)
+            features_dict = {
+            
                     "zipcode": zipcode,
                     "latitude": latitude,
                     "longitude": longitude,
@@ -104,70 +113,122 @@ if submitted:
                     "review_scores_cleanliness": review_scores_cleanliness,
                     "review_scores_location": review_scores_location,
                     "review_scores_value": review_scores_value
-                }
+            }
+            
+            # Preprocess input
+            input_df = preprocess_input(features_dict)
+            
+            # Safely encode categorical variables
+            input_df = safe_encode_categorical(input_df, encoders)
+            
+            # Scale and predict
+            input_scaled = scaler.transform(input_df[required_columns])
+            predicted_price = model.predict(input_scaled)[0]
+            
+            # Display prediction
+            st.success("Prediction Successful!")
+            st.markdown(f"<h1>Predicted Price: ${predicted_price:.2f}</h1>", unsafe_allow_html=True)
+            
+            # Optional: Show feature importance
+            if st.checkbox("Show Feature Importance"):
+                importance_plot = plot_feature_importance(model, required_columns)
+                st.pyplot(importance_plot)
+        
+        except Exception as e:
+            st.error(f"Prediction Error: {e}")
+# ---------------------------------------------------------------
+
+
+
+# # Handle prediction
+# if submitted:
+#     if not model_loaded:
+#         st.error("❌ Model files not found. Please make sure the model files are in the app directory.")
+#     else:
+#         try:
+#             with st.spinner(" Calculating optimal price..."):
+#                 # Create features dictionary
+#                 features_dict = {
+#                     "zipcode": zipcode,
+#                     "latitude": latitude,
+#                     "longitude": longitude,
+#                     "property_type": property_type,
+#                     "room_type": room_type,
+#                     "accommodates": accommodates,
+#                     "bathrooms": bathrooms,
+#                     "bedrooms": bedrooms,
+#                     "beds": beds,
+#                     "bed_type": bed_type,
+#                     "availability_365": availability_365,
+#                     "number_of_reviews": number_of_reviews,
+#                     "review_scores_rating": review_scores_rating,
+#                     "review_scores_cleanliness": review_scores_cleanliness,
+#                     "review_scores_location": review_scores_location,
+#                     "review_scores_value": review_scores_value
+#                 }
                 
-                # Show request data if debug is enabled
-                if st.sidebar.checkbox(" Show Request Data"):
-                    st.json(features_dict)
+#                 # Show request data if debug is enabled
+#                 if st.sidebar.checkbox(" Show Request Data"):
+#                     st.json(features_dict)
                 
-                # Handle missing values with reasonable defaults
-                features_dict['beds'] = features_dict.get('beds') or features_dict['accommodates']
-                features_dict['bedrooms'] = features_dict.get('bedrooms') or max(1, features_dict['beds'] // 2)
+#                 # Handle missing values with reasonable defaults
+#                 features_dict['beds'] = features_dict.get('beds') or features_dict['accommodates']
+#                 features_dict['bedrooms'] = features_dict.get('bedrooms') or max(1, features_dict['beds'] // 2)
                 
-                # Create engineered features
-                features_dict['has_reviews'] = int(features_dict['number_of_reviews'] > 0)
-                features_dict['total_sleeping_capacity'] = features_dict['beds'] * 2
-                features_dict['location'] = features_dict['zipcode']  # Using zipcode as location
-                features_dict['distance_to_center'] = 0.0  # Would calculate from lat/long in real implementation
-                features_dict['price_per_person'] = 1.0  # Placeholder, will be replaced by prediction
+#                 # Create engineered features
+#                 features_dict['has_reviews'] = int(features_dict['number_of_reviews'] > 0)
+#                 features_dict['total_sleeping_capacity'] = features_dict['beds'] * 2
+#                 features_dict['location'] = features_dict['zipcode']  # Using zipcode as location
+#                 features_dict['distance_to_center'] = 0.0  # Would calculate from lat/long in real implementation
+#                 features_dict['price_per_person'] = 1.0  # Placeholder, will be replaced by prediction
                 
-                # Create DataFrame with all required columns
-                required_columns = ['zipcode', 'latitude', 'longitude', 'property_type', 'room_type', 
-                                'accommodates', 'bathrooms', 'bedrooms', 'beds', 'bed_type', 
-                                'availability_365', 'number_of_reviews', 'review_scores_rating', 
-                                'review_scores_cleanliness', 'review_scores_location', 
-                                'review_scores_value', 'price_per_person', 'total_sleeping_capacity', 
-                                'has_reviews', 'location', 'distance_to_center']
+#                 # Create DataFrame with all required columns
+#                 required_columns = ['zipcode', 'latitude', 'longitude', 'property_type', 'room_type', 
+#                                 'accommodates', 'bathrooms', 'bedrooms', 'beds', 'bed_type', 
+#                                 'availability_365', 'number_of_reviews', 'review_scores_rating', 
+#                                 'review_scores_cleanliness', 'review_scores_location', 
+#                                 'review_scores_value', 'price_per_person', 'total_sleeping_capacity', 
+#                                 'has_reviews', 'location', 'distance_to_center']
                 
-                input_df = pd.DataFrame([features_dict])
+#                 input_df = pd.DataFrame([features_dict])
                 
-                # Encode categorical variables safely
-                categorical_cols = ['property_type', 'room_type', 'bed_type', 'location', 'total_sleeping_capacity']
-                for col in categorical_cols:
-                    if col in encoders:
-                        # Convert total_sleeping_capacity to string if it's in encoders (since it was originally numerical)
-                        if col == 'total_sleeping_capacity':
-                            input_df[col] = input_df[col].astype(str)
+#                 # Encode categorical variables safely
+#                 categorical_cols = ['property_type', 'room_type', 'bed_type', 'location', 'total_sleeping_capacity']
+#                 for col in categorical_cols:
+#                     if col in encoders:
+#                         # Convert total_sleeping_capacity to string if it's in encoders (since it was originally numerical)
+#                         if col == 'total_sleeping_capacity':
+#                             input_df[col] = input_df[col].astype(str)
                         
-                        # Handle unseen categories
-                        if input_df[col].iloc[0] in encoders[col].classes_:
-                            input_df[col] = encoders[col].transform(input_df[col])
-                        else:
-                            # For unseen categories, use the most common category in training
-                            input_df[col] = 0  # Default to first class
+#                         # Handle unseen categories
+#                         if input_df[col].iloc[0] in encoders[col].classes_:
+#                             input_df[col] = encoders[col].transform(input_df[col])
+#                         else:
+#                             # For unseen categories, use the most common category in training
+#                             input_df[col] = 0  # Default to first class
                 
-                # Ensure all columns match the training data format
-                for col in required_columns:
-                    if col not in input_df.columns:
-                        input_df[col] = 0  # Default value for missing columns
+#                 # Ensure all columns match the training data format
+#                 for col in required_columns:
+#                     if col not in input_df.columns:
+#                         input_df[col] = 0  # Default value for missing columns
                 
-                # Apply scaling
-                input_scaled = scaler.transform(input_df[required_columns])
+#                 # Apply scaling
+#                 input_scaled = scaler.transform(input_df[required_columns])
                 
-                # Make prediction
-                predicted_price = model.predict(input_scaled)[0]
+#                 # Make prediction
+#                 predicted_price = model.predict(input_scaled)[0]
                 
-                # Round to 2 decimal places
-                predicted_price = round(float(predicted_price), 2)
+#                 # Round to 2 decimal places
+#                 predicted_price = round(float(predicted_price), 2)
                 
-                # Display price prominently
-                st.success(" Prediction Successful!")
-                st.markdown(f"<h1 style='text-align: center;'> ${predicted_price:.2f}</h1>", unsafe_allow_html=True)
-                st.markdown("<p style='text-align: center; font-size: 18px;'>Suggested Price</p>", unsafe_allow_html=True)
+#                 # Display price prominently
+#                 st.success(" Prediction Successful!")
+#                 st.markdown(f"<h1 style='text-align: center;'> ${predicted_price:.2f}</h1>", unsafe_allow_html=True)
+#                 st.markdown("<p style='text-align: center; font-size: 18px;'>Suggested Price</p>", unsafe_allow_html=True)
 
             
-        except Exception as e:
-            st.error(f" Prediction Error: {str(e)}")
+#         except Exception as e:
+#             st.error(f" Prediction Error: {str(e)}")
 
 # Additional Information Section
 with st.expander("❓ How does the prediction work?"):
@@ -186,7 +247,7 @@ with st.expander("❓ How does the prediction work?"):
     """)
 
 # Add settings in sidebar for app customization
-st.sidebar.title("⚙️ Settings")
+st.sidebar.title(" Settings")
 
 debug_mode = st.sidebar.checkbox(" Show Input Data", value=False)
 if debug_mode:
