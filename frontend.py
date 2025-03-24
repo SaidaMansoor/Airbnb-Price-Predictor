@@ -37,7 +37,7 @@ def load_model_components():
 model, scaler, encoders, model_loaded = load_model_components()
 
 # Main UI
-st.title("🏠 Airbnb Price Predictor")
+st.title(" Airbnb Price Predictor")
 st.write("Enter your property details to get an estimated price.")
 
 # Form layout
@@ -51,7 +51,7 @@ with st.form("prediction_form"):
     st.markdown("---")
 
     # Property Details
-    st.subheader("🏢 Property Details")
+    st.subheader(" Property Details")
     property_type = st.selectbox("Property Type", options=PROPERTY_TYPES)
     room_type = st.selectbox("Room Type", options=ROOM_TYPES)
     bed_type = st.selectbox("Bed Type", options=BED_TYPES)
@@ -59,7 +59,7 @@ with st.form("prediction_form"):
     st.markdown("---")
 
     # Accommodation Details
-    st.subheader("🛏️ Accommodation Details")
+    st.subheader(" Accommodation Details")
     accommodates = st.slider("Accommodates", min_value=1, max_value=16, value=2)
     bathrooms = st.number_input("Bathrooms", min_value=0.0, max_value=10.0, value=1.0, step=0.5)
     bedrooms = st.number_input("Bedrooms", min_value=0, max_value=10, value=1)
@@ -68,7 +68,7 @@ with st.form("prediction_form"):
     st.markdown("---")
 
     # Availability & Reviews
-    st.subheader("⭐ Availability & Reviews")
+    st.subheader(" Availability & Reviews")
     availability_365 = st.slider("Days Available Per Year", min_value=0, max_value=365, value=300)
     number_of_reviews = st.number_input("Number of Reviews", min_value=0, max_value=1000, value=10)
     review_scores_rating = st.slider("Overall Rating", min_value=0.0, max_value=100.0, value=90.0)
@@ -86,7 +86,7 @@ if submitted:
         st.error("❌ Model files not found. Please make sure the model files are in the app directory.")
     else:
         try:
-            with st.spinner("🔄 Calculating optimal price..."):
+            with st.spinner(" Calculating optimal price..."):
                 # Create features dictionary
                 features_dict = {
                     "zipcode": zipcode,
@@ -108,7 +108,7 @@ if submitted:
                 }
                 
                 # Show request data if debug is enabled
-                if st.sidebar.checkbox("🔍 Show Request Data"):
+                if st.sidebar.checkbox(" Show Request Data"):
                     st.json(features_dict)
                 
                 # Handle missing values with reasonable defaults
@@ -162,19 +162,13 @@ if submitted:
                 predicted_price = round(float(predicted_price), 2)
                 
                 # Display price prominently
-                st.success("✅ Prediction Successful!")
-                st.markdown(f"<h1 style='text-align: center;'>💰 ${predicted_price:.2f}</h1>", unsafe_allow_html=True)
+                st.success(" Prediction Successful!")
+                st.markdown(f"<h1 style='text-align: center;'> ${predicted_price:.2f}</h1>", unsafe_allow_html=True)
                 st.markdown("<p style='text-align: center; font-size: 18px;'>Suggested Nightly Price</p>", unsafe_allow_html=True)
 
-                # Price Strategy
-                st.subheader("📊 Pricing Strategy")
-                col1, col2, col3 = st.columns(3)
-                col1.metric("Economy Price", f"${predicted_price * 0.85:.2f}", "-15%")
-                col2.metric("Optimal Price", f"${predicted_price:.2f}", "Recommended")
-                col3.metric("Premium Price", f"${predicted_price * 1.15:.2f}", "+15%")
-        
+            
         except Exception as e:
-            st.error(f"⚠️ Prediction Error: {str(e)}")
+            st.error(f" Prediction Error: {str(e)}")
 
 # Additional Information Section
 with st.expander("❓ How does the prediction work?"):
