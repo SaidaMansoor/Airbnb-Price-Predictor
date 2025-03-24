@@ -43,7 +43,7 @@ st.write("Enter your property details to get an estimated price.")
 # Form layout
 with st.form("prediction_form"):
     # Location Details
-    st.subheader("📍 Location Details")
+    st.subheader(" Location Details")
     zipcode = st.text_input("Zipcode", value="10001", help="Enter the postal code for your property location.")
     latitude = st.number_input("Latitude", value=40.7128, format="%.4f")
     longitude = st.number_input("Longitude", value=-74.0060, format="%.4f")
@@ -164,7 +164,7 @@ if submitted:
                 # Display price prominently
                 st.success(" Prediction Successful!")
                 st.markdown(f"<h1 style='text-align: center;'> ${predicted_price:.2f}</h1>", unsafe_allow_html=True)
-                st.markdown("<p style='text-align: center; font-size: 18px;'>Suggested Nightly Price</p>", unsafe_allow_html=True)
+                st.markdown("<p style='text-align: center; font-size: 18px;'>Suggested Price</p>", unsafe_allow_html=True)
 
             
         except Exception as e:
