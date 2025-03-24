@@ -9,7 +9,6 @@ warnings.filterwarnings('ignore')
 # Configure the app
 st.set_page_config(
     page_title="Airbnb Price Predictor",
-    page_icon="🏠",
     layout="wide"
 )
          
