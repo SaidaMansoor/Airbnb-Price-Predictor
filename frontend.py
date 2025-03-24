@@ -193,4 +193,4 @@ if debug_mode:
     st.json(features_dict)
 
 if st.sidebar.button("Reset Form"):
-    st.experimental_rerun()  # Clears all inputs
+    st.rerun()  # Clears all inputs
