@@ -186,4 +186,4 @@ with st.expander("❓ How does the prediction work?"):
     """)
 
 # Add settings in sidebar for app customization
-st.sidebar.title("⚙️ Settings")
+# st.sidebar.title(" Settings")
