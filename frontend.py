@@ -167,16 +167,6 @@ def main():
         This allows us to recommend an optimal price that maximizes your revenue 
         while remaining competitive in your local market.
         """)
-
-    # Sidebar settings
-    st.sidebar.title("Settings")
-    debug_mode = st.sidebar.checkbox("Show Input Data", value=False)
-    
-    if debug_mode:
-        st.json(features_dict)
-
-    if st.sidebar.button("Reset Form"):
-        st.rerun()
-
+        
 if __name__ == "__main__":
     main()
