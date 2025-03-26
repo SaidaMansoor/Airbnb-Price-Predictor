@@ -148,11 +148,6 @@ def main():
                 # Display prediction
                 st.success("Prediction Successful!")
                 st.markdown(f"<h1>Predicted Price: ${predicted_price:.2f}</h1>", unsafe_allow_html=True)
-                
-                # Optional: Show feature importance
-                if st.checkbox("Show Feature Importance"):
-                    importance_plot = plot_feature_importance(st.session_state.model, required_columns)
-                    st.pyplot(importance_plot)
             
             except Exception as e:
                 st.error(f"Prediction Error: {e}")
